@@ -53,6 +53,7 @@ public class Main {
 	                JsonParser parser = mapper.treeAsTokens(element);
 	                Line line = mapper.readValue(parser, Line.class);
 	                lines.add(line);
+	                line.convertArret();
 	            }
 	            
 	            JsonNode correspNode = node.get("corresp");

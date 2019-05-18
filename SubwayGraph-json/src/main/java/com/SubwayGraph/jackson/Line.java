@@ -1,6 +1,9 @@
 package com.SubwayGraph.jackson;
 
+import java.util.ArrayList;
+
 public class Line {
+	private ArrayList<ArrayList<String>> listChemin;
 	private String[][] arrets;
 	private String name;
 	private String num;
@@ -30,4 +33,23 @@ public class Line {
 	
 	public boolean getShow() { return show; }
 	public void setShow(boolean show) { this.show = show; }
+	
+	public void convertArret() {
+		if (this.arrets != null) {
+			listChemin = new ArrayList<ArrayList<String>>();
+			for (int i = 0; i < this.arrets.length; i++) {
+				ArrayList<String> listArret = new ArrayList<String>();
+				for (int j = 0; j < arrets[i].length; j++) {
+					listArret.add(arrets[i][j]);
+				}
+				listChemin.add(listArret);
+			}
+		}
+	}
+	public ArrayList<ArrayList<String>> getListChemin() {
+		return listChemin;
+	}
+	public void setListChemin(ArrayList<ArrayList<String>> listChemin) {
+		this.listChemin = listChemin;
+	}
 }
