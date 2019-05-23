@@ -18,6 +18,9 @@ public abstract class Main  <V extends Comparable<V>> {
 
 	public static void main(String[] args) {
 		Subway subway = init();
+		MapBuilder m = new MapBuilder(subway);
+		System.out.println(m.getSubwayGraph().toString());
+
 		Interface i = new Interface();
 		i.displayInterface();
 	}

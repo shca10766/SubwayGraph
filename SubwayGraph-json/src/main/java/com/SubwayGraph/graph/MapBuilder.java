@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultUndirectedGraph;
 
 import com.SubwayGraph.jackson.Line;
@@ -11,9 +12,12 @@ import com.SubwayGraph.jackson.Routes;
 import com.SubwayGraph.jackson.Station;
 import com.SubwayGraph.jackson.Subway;
 
+
+
 public class MapBuilder {
 	private Subway subway;
-	private Graph<Station, Edge> subwayGraph;
+	private Graph<String, DefaultEdge> subwayGraph;
+	
 
 	
 	public Subway getSubway() {
@@ -24,30 +28,24 @@ public class MapBuilder {
 		this.subway = subway;
 	}
 
-	public Graph<Station, Edge> getSubwayGraph() {
+	public Graph<String, DefaultEdge> getSubwayGraph() {
 		return subwayGraph;
 	}
 
-	public MapBuilder() {
+	public MapBuilder(Subway subway) {
 		super();
-		this.subway = Main.init();
-		this.subwayGraph = new DefaultUndirectedGraph<Station, Edge>(Edge.class);
+		this.subway = subway;
+		this.subwayGraph = new DefaultUndirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+		addVertices();
+		addEdges();
 	}
 
-	// Construct the graph
-	public void buildGraph() {
-			//Adding vertices
-			addVertices();
-			//Adding edges
-			addEdges();	
-
-	}
 	
 	
 	//Add vertices
 	public void addVertices() {
 		for(Station station: subway.getStations()) {
-			subwayGraph.addVertex(station);
+			subwayGraph.addVertex(station.getNum());
 		}
 	}
 	
@@ -61,7 +59,7 @@ public class MapBuilder {
 			for(int j = 0; j<arrets.length;j++) {
 				if(arrets[j][1]!=0) {
 					String idEdge = routes.get(arrets[j][0]).getArrets()[arrets[j][1]-1];
-					addEdge(stations.get(i).getNum(),idEdge);
+					subwayGraph.addEdge(stations.get(i).getNum(),idEdge);
 				}
 			}
 		}
@@ -69,10 +67,7 @@ public class MapBuilder {
 	
 	
 
-	private void addEdge(String num, String idEdge) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	////////////////////////////////
 	// Stations in a route
@@ -237,4 +232,7 @@ public class MapBuilder {
 		return res;
 	}
 
+	
+	
+	
 }
