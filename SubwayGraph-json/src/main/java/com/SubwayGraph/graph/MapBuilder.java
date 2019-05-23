@@ -1,4 +1,4 @@
-package com.SubwayGraph.jackson;
+package com.SubwayGraph.graph;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,6 +7,10 @@ import java.util.List;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultUndirectedGraph;
 
+import com.SubwayGraph.jackson.Line;
+import com.SubwayGraph.jackson.Routes;
+import com.SubwayGraph.jackson.Station;
+import com.SubwayGraph.jackson.Subway;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MapBuilder {

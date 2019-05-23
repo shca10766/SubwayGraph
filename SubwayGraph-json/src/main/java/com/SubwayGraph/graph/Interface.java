@@ -1,5 +1,5 @@
 
-package com.SubwayGraph.jackson;
+package com.SubwayGraph.graph;
 
 import java.awt.*;
 import java.awt.event.*;

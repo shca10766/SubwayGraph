@@ -1,4 +1,4 @@
-package com.SubwayGraph.jackson;
+package com.SubwayGraph.graph;
 
 public class Itinerary {
 	private String type;

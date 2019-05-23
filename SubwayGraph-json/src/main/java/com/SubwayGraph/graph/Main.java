@@ -1,10 +1,14 @@
-package com.SubwayGraph.jackson;
+package com.SubwayGraph.graph;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.SubwayGraph.jackson.Line;
+import com.SubwayGraph.jackson.Routes;
+import com.SubwayGraph.jackson.Station;
+import com.SubwayGraph.jackson.Subway;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,10 +18,8 @@ public abstract class Main  <V extends Comparable<V>> {
 
 	public static void main(String[] args) {
 		Subway subway = init();
-		
-		System.out.println(subway.getLines().get(7).getListChemin());
-		
-		
+		Interface i = new Interface();
+		i.displayInterface();
 	}
 	
 	public static Subway init() {
