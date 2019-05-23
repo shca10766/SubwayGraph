@@ -1,6 +1,5 @@
 package com.SubwayGraph.graph;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +10,12 @@ import com.SubwayGraph.jackson.Line;
 import com.SubwayGraph.jackson.Routes;
 import com.SubwayGraph.jackson.Station;
 import com.SubwayGraph.jackson.Subway;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MapBuilder {
 	private Subway subway;
 	private Graph<Station, Edge> subwayGraph;
-	private ObjectMapper obj = new ObjectMapper();
 
+	
 	public Subway getSubway() {
 		return subway;
 	}
@@ -41,24 +39,7 @@ public class MapBuilder {
 			//Adding vertices
 			addVertices();
 			//Adding edges
-			
-		
-	
-
-		
-		//Add edges: vertices in a route, sorted.
-		
-		
-		
-		
-		
-		
-		
-		// for (Station s: subwayGraph.vertexSet()) {
-		// System.out.println("Name: "+s.getNom()+", Number: "+s.getNum()+", Lines:
-		// "+s.getLignes());
-		// System.out.println(subwayGraph.vertexSet().size());
-		// }
+			addEdges();	
 
 	}
 	
@@ -70,9 +51,28 @@ public class MapBuilder {
 		}
 	}
 	
-	//Add edge
+	//Add edges
+	public void addEdges() {
+		List<Station>stations = new ArrayList<>(subway.getStations());
+		List<Routes>routes = new ArrayList<>(subway.getRoutes());
+		
+		for(int i = 0; i<stations.size();i++) {
+			int[][] arrets = stations.get(i).getRoutes();
+			for(int j = 0; j<arrets.length;j++) {
+				if(arrets[j][1]!=0) {
+					String idEdge = routes.get(arrets[j][0]).getArrets()[arrets[j][1]-1];
+					addEdge(stations.get(i).getNum(),idEdge);
+				}
+			}
+		}
+	}
 	
 	
+
+	private void addEdge(String num, String idEdge) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	////////////////////////////////
 	// Stations in a route
