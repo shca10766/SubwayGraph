@@ -18,8 +18,6 @@ public class MapBuilder {
 	private Subway subway;
 	private Graph<String, DefaultEdge> subwayGraph;
 	
-
-	
 	public Subway getSubway() {
 		return subway;
 	}
@@ -145,14 +143,6 @@ public class MapBuilder {
 		return res;
 	}
 
-	// TODO
-	// Neighbors stations
-	public List<Station> getNeihborsStations(String name) {
-		List<Station> res = new ArrayList<Station>();
-
-		return null;
-	}
-
 	//////////////////////////////////////////////////////////////
 	// AUXILIAR
 
@@ -173,16 +163,12 @@ public class MapBuilder {
 
 	// Get position of a station in a route
 	public Integer positionStationRoute(String stationid, String routeDirection) {
-		
-		
-		
-		/*List<Station>stRoute = new ArrayList<>(getStationsOfRoute(routeDirection));
-		Integer index = stRoute.indexOf(getStationWithId(stationid));*/
-		
-		//return index;
-		return 0;
+		List<Station>stRoute = new ArrayList<>(getStationsOfRoute(routeDirection));
+		Integer index = stRoute.indexOf(getStationWithId(stationid));
+		return index;
 	}
 
+	
 	public Routes getRouteByDirection(String routeDirection) {
 		Routes res = null;
 
@@ -233,6 +219,4 @@ public class MapBuilder {
 	}
 
 	
-	
-	
-}
+	}
