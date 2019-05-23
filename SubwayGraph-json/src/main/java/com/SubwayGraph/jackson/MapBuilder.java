@@ -58,6 +58,7 @@ public class MapBuilder {
 
 	}
 	
+	
 	//Add vertices
 	public void addVertices() {
 		for(Station station: subway.getStations()) {
@@ -65,7 +66,11 @@ public class MapBuilder {
 		}
 	}
 	
+	//Add edge
+	
+	
 
+	////////////////////////////////
 	// Stations in a route
 	public List<Station> getStationsOfRoute(String direction) {
 		List<Station> res = new ArrayList<Station>();
