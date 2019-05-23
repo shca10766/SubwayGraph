@@ -9,10 +9,15 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class Main {
+public abstract class Main  <V extends Comparable<V>> {
+	
 
 	public static void main(String[] args) {
 		Subway subway = init();
+		
+		System.out.println(subway.getLines().get(7).getListChemin());
+		
+		
 	}
 	
 	public static Subway init() {
