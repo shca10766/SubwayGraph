@@ -47,6 +47,7 @@ public class Line {
 		}
 	}
 	public ArrayList<ArrayList<String>> getListChemin() {
+		convertArret();
 		return listChemin;
 	}
 	public void setListChemin(ArrayList<ArrayList<String>> listChemin) {

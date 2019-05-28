@@ -217,6 +217,22 @@ public class MapBuilder {
 		}
 		return res;
 	}
-
 	
+	public Routes getRouteByStations(String source, String target) {
+		ArrayList<Routes> routes = subway.getRoutes();
+		for (int i = 1 ; i < routes.size(); i++) {
+			String[] arrets = routes.get(i).getArrets();
+			for (int j = 0 ; j < arrets.length; j++) {
+				if (arrets[j].equals(source)) {
+					for (int k = j + 1 ; k < arrets.length; k++) {
+						if (arrets[k].equals(target)) {
+							return routes.get(i);
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
+	
+}

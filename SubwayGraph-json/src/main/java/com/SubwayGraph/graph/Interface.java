@@ -10,6 +10,9 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.*;
 
+import com.SubwayGraph.jackson.Station;
+import com.SubwayGraph.jackson.Subway;
+
 /* MenuDemo.java requires images/middle.gif. */
 
 /*
@@ -21,6 +24,13 @@ public class Interface {
 	private JPanel contentRoute;
 	private JPanel contentForm;
 	private JTextField fromInput, toInput;
+	private MapBuilder map;
+	private Subway subway;
+	
+	public Interface(MapBuilder m, Subway s) {
+		this.map = m;
+		this.subway = s;
+	}
 	
     public void displayInterface() {
         //Schedule a job for the event-dispatching thread:
@@ -38,7 +48,7 @@ public class Interface {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Create and set up the content pane.
-        Interface demo = new Interface();
+        Interface demo = new Interface(this.map, this.subway);
         frame.setJMenuBar(demo.createMenuBar());
         frame.setContentPane(demo.createContentPane());
 
@@ -135,8 +145,9 @@ public class Interface {
         contentInput.setLayout(new BoxLayout(contentInput, BoxLayout.LINE_AXIS));
         contentInput.setOpaque(true);
         
-        JTextField input = new JTextField() {
-            public Dimension getPreferredSize() {
+        String[] stationString = getStationStrings();
+        JSpinner input = new JSpinner(new SpinnerListModel(stationString)) {
+        	public Dimension getPreferredSize() {
                 return new Dimension(380, 30);
             }
             public Dimension getMinimumSize() {
@@ -156,13 +167,34 @@ public class Interface {
         contentInput.add(input);
         
         if (label_input.equals("Departure")) {
-        	this.fromInput = input;
+        	this.fromInput = getTextField((JSpinner)input);
         }
         else {
-        	this.toInput = input;
+        	this.toInput = getTextField((JSpinner)input);
         }
         
         return contentInput;
+    }
+    
+    public JFormattedTextField getTextField(JSpinner spinner) {
+        JComponent editor = spinner.getEditor();
+        if (editor instanceof JSpinner.DefaultEditor) {
+            return ((JSpinner.DefaultEditor)editor).getTextField();
+        } else {
+            System.err.println("Unexpected editor type: "
+                               + spinner.getEditor().getClass()
+                               + " isn't a descendant of DefaultEditor");
+            return null;
+        }
+    }
+    
+    public String[] getStationStrings() {
+    	ArrayList<Station> stations = subway.getStations();
+    	String[] stationsString = new String[stations.size()];
+    	for (int i = 0 ; i < stations.size(); i++) {
+    		stationsString[i] = stations.get(i).getNom();
+    	}
+        return stationsString;
     }
     
     
@@ -210,9 +242,8 @@ public class Interface {
     
     
     public JComponent displayRoute(String departure, String arrival) {
-    	ArrayList<Itinerary> itinerary = new ArrayList<Itinerary>();
-    	itinerary.add(new Itinerary("metro", "4", "Gare du Nord", "Montparnasse-Bienvenue", "Mairie de Montrouge"));
-    	itinerary.add(new Itinerary("metro", "12", "Montparnasse-Bienvenue", "Corentin Celton", "Mairie d'Issy"));
+    	DijkstraShortestPath d = new DijkstraShortestPath(map, idStationWithName(departure), idStationWithName(arrival), subway);
+    	ArrayList<Itinerary> itinerary = d.getItinerary();
     	
     	JPanel contentRoute = new JPanel(new BorderLayout());
         contentRoute.setLayout(new BoxLayout(contentRoute,BoxLayout.PAGE_AXIS));
@@ -354,4 +385,14 @@ public class Interface {
             return null;
         }
     } 
+    
+    public String idStationWithName(String name) {
+    	ArrayList<Station> stations = subway.getStations();
+    	for (int i = 0; i < stations.size(); i++) {
+    		if (stations.get(i).getNom().equals(name)) {
+    			return stations.get(i).getNum();
+    		}
+    	}
+    	return null;
+    }
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.jgrapht.graph.DefaultEdge;
 
 import com.SubwayGraph.jackson.Line;
 import com.SubwayGraph.jackson.Routes;
@@ -20,16 +21,9 @@ public abstract class Main <V extends Comparable<V>> {
 	public static void main(String[] args) {
 		Subway subway = init();
 		MapBuilder m = new MapBuilder(subway);
-		System.out.println(m.getSubwayGraph().toString());
-	
-		BFSShortestPath bfs = new BFSShortestPath(m);
-		System.out.println("Neighbors: "+bfs.getNeighbors("1802"));
-		//System.out.println("BFS: "+bfs.bfs("1802", "1716"));
-		//bfs.printBFS(bfs.bfs("4028973", "1720"));
 		
-		Interface i = new Interface();
-		i.displayInterface();
-		
+		Interface i = new Interface(m, subway);
+		i.displayInterface();		
 	}
 	
 	public static Subway init() {
