@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 import com.SubwayGraph.jackson.Line;
@@ -22,8 +25,18 @@ public abstract class Main <V extends Comparable<V>> {
 		Subway subway = init();
 		MapBuilder m = new MapBuilder(subway);
 		
+		
 		Interface i = new Interface(m, subway);
-		i.displayInterface();		
+		//i.displayInterface();		
+				
+		BFSShortestPath b = new BFSShortestPath(m);
+		
+		
+
+		List<String>bfs = new ArrayList<>(b.bfs("1999", "1676"));
+		b.printBFS(bfs);
+		
+		
 	}
 	
 	public static Subway init() {
