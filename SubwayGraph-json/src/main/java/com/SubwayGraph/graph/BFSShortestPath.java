@@ -108,7 +108,6 @@ public class BFSShortestPath {
 			//neighbors.sort(cs);
 			List<String>aux = new ArrayList<>(treeSet);
 			
-			System.err.println("Element: "+mapBuilder.getStationWithId(element).getNom());
 			for(String neighbor:aux) {
 				String name = mapBuilder.getStationWithId(neighbor).getNom();
 				System.out.println("neighbor: "+name);
@@ -140,6 +139,7 @@ public class BFSShortestPath {
 
 	public void printBFS(List<String> stationsBfs) {
 
+		System.err.println("Still needs to be improved: THIS IS THE BFS until the target is reached, not the route yet: ");
 		for (String s : stationsBfs) {
 			Station station = mapBuilder.getStationWithId(s);
 			System.out.println("Station Name: " + station.getNom() + ", id: " + station.getNum());
@@ -219,14 +219,29 @@ class ComparatorStations implements Comparator<String> {
 				System.out.println(mapBuilder.getStationWithId(stationId2).getNom() + " closer to "
 						+ mapBuilder.getStationWithId(parent).getNom()+" than "+mapBuilder.getStationWithId(stationId1).getNom());
 				return -1;
-			} else if (distToTargetst1 == distTotargetst2) {
-				{
+			} else {
 					System.out.println("Both stations at the same distance: "+mapBuilder.getStationWithId(stationId1).getNom()+" , "+mapBuilder.getStationWithId(stationId2).getNom()
 							+"to "+mapBuilder.getStationWithId(parent).getNom());
+					
+					if(mapBuilder.stationsSameLine(stationId1, parent) && !mapBuilder.stationsSameLine(stationId2, parent)) {
+						
+						System.out.println("same distance, but same line for station "+mapBuilder.getStationWithId(stationId1).getNom());
+						return 1;
+					}else if(!mapBuilder.stationsSameLine(stationId1, parent) && mapBuilder.stationsSameLine(stationId2, parent)) {
+							System.out.println("same distance, but same line for station "+mapBuilder.getStationWithId(stationId2).getNom());
+							return -1;
+					}else if(mapBuilder.stationsSameLine(stationId1, parent) && mapBuilder.stationsSameLine(stationId2, parent)) {
+						System.out.println("Both in the same line");
+					}else {
+						System.out.println("None in the line of the target");
+					}
+					
+					
+					
 					return 0;
 				}
 
-			}
+			
 		}
 
 		// System.out.println("lines " +
