@@ -3,8 +3,11 @@ package com.SubwayGraph.graph;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -25,283 +28,155 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.UserDataHandler;
 
 import com.SubwayGraph.jackson.Station;
+import com.SubwayGraph.jackson.Subway;
 import com.fasterxml.jackson.core.TreeNode;
 
 
 public class BFSShortestPath {
 
+	private boolean[] marked;
+	private int[] previous;
+	private double[] distance;
+	
 	private MapBuilder mapBuilder;
-	private List<DefaultEdge> edges;
-	private List<String> vertices;
+	private String idStart;
+	private String idEnd;
+	private List<String> out;
+	
+	private Subway subway;
+	private List<DefaultEdge>edges;
+	private List<String>vertices;
 
-	public BFSShortestPath(MapBuilder mapBuilder) {
+	public BFSShortestPath(MapBuilder mapBuilder, String id_stationStart, String id_stationEnd, Subway s) {
 		super();
+		this.subway = s;
+		this.idStart = id_stationStart;
+		this.idEnd = id_stationEnd;
 		this.mapBuilder = mapBuilder;
 		this.edges = new ArrayList<>(mapBuilder.getSubwayGraph().edgeSet());
 		this.vertices = new ArrayList<>(mapBuilder.getSubwayGraph().vertexSet());
+		
+		BFSSP();
 	}
-
-	public List<DefaultEdge> getEdges() {
-		return new ArrayList<>(edges);
+	
+	public void BFSSP() {
+		int n = this.vertices.size();
+		
+		this.marked = new boolean[n];
+		this.previous = new int[n];
+		this.distance = new double[n];
+		
+		for (int i = 0; i < this.previous.length; i++) {
+			this.previous[i] = -1;
+			this.marked[i] = false;
+		}
+		
+		this.out = bfs();
 	}
-
-	public List<String> getVertices() {
-		return new ArrayList<>(vertices);
+	
+	public List<String> bfs() {
+		this.out = new LinkedList<>();
+		bfs(this.vertices, this.out);
+		return out;
+	}
+	
+	private void bfs(List<String> vertices, List<String> out) {
+		
+		String v = this.idStart;
+		this.distance[vertices.indexOf(v)] = 0;
+		Queue<String> q = new LinkedList<>();
+		q.add(this.idStart);
+		
+		do {
+			//ToDo
+			v = q.poll();
+			this.marked[vertices.indexOf(v)] = true;
+            out.add(v);
+            
+            Iterator<String> i = getNeighbors(v).listIterator(); 
+            while (i.hasNext()) 
+            { 
+                String u = i.next();
+                if (!this.marked[vertices.indexOf(u)]) {
+                	
+                	this.distance[vertices.indexOf(u)] = this.distance[vertices.indexOf(v)] + 1;
+                	this.previous[vertices.indexOf(u)] = vertices.indexOf(v);
+                	this.marked[vertices.indexOf(u)] = true;
+                	
+                	q.add(u);
+                }
+            } 
+			
+		} while(q.size() > 0);
+	}
+	
+	public boolean hasPathTo(String v) {
+		if (this.out.indexOf(v) != -1) {
+			return true;
+		}
+		return false;
 	}
 
 	// Get Neighbors of a vertex
 	public List<String> getNeighbors(String stationId) {
 		List<String> res = new ArrayList<>();
-
-		for (DefaultEdge e : getEdges()) {
-			String source = mapBuilder.getSubwayGraph().getEdgeSource(e);
-			String target = mapBuilder.getSubwayGraph().getEdgeTarget(e);
-
-			if (source.equals(stationId)) {
-				if (!res.contains(target))
-					res.add(target);
-			} else if (target.equals(stationId)) {
-				if (!res.contains(source))
-					res.add(source);
+		res.add(stationId);
+		
+		for (int j = 1; j < edges.size(); j++) {
+			String source = mapBuilder.getSubwayGraph().getEdgeSource(edges.get(j));
+			String target = mapBuilder.getSubwayGraph().getEdgeTarget(edges.get(j));
+			
+			if(source.equals(stationId)) {
+				res.add(target);
+			}
+			else if(target.equals(stationId)) {
+				res.add(source);
 			}
 		}
-		return res;
+		return res;	
 	}
-
-	public List<String> neigborsOfNeighbors(String source) {
-		List<String> res = new ArrayList<>();
-
-		for (String neigh : getNeighbors(source)) {
-			for (String subneigh : getNeighbors(neigh)) {
-				if (!res.contains(subneigh))
-					res.add(subneigh);
-			}
-		}
-
-		System.out.println("neighbors of neighbors: " + res);
-
-		return res;
-	}
-
-	public List<String> bfs(String sourceStation, String targetStation) {
-
-		PriorityQueue<String> queue = new PriorityQueue<>();
-		queue.add(sourceStation);
-
-		List<String> visited = new ArrayList<>();
-		visited.add(sourceStation);
-
-		List<String> bfs = new ArrayList<>();
-		bfs.add(sourceStation);
-
-		while (!queue.isEmpty()) {
-			String element = queue.poll();
-			
-			ComparatorStations cs = new ComparatorStations();
-			cs.setMapBuilder(mapBuilder);
-			cs.setParent(targetStation);
-
-			TreeSet treeSet = new TreeSet(cs);
-			List<String> neighbors = getNeighbors(element);
-			neighbors.removeAll(visited);
-			treeSet.addAll(neighbors);
-			//neighbors.sort(cs);
-			List<String>aux = new ArrayList<>(treeSet);
-			
-			for(String neighbor:aux) {
-				String name = mapBuilder.getStationWithId(neighbor).getNom();
-				System.out.println("neighbor: "+name);
-			}
-			
-			System.out.println();
-			
-			String nh = "";
-			for (String neighbor : neighbors) {
-				queue.add(neighbor);
-				visited.add(neighbor);
-				bfs.add(neighbor);
-
-				if (neighbor.equals(targetStation)) {
-					nh = neighbor;
-					break;
-				}
-			}
-
-			if (nh.equals(targetStation)) {
-
-				break;
-			}
-		}
-
-		return bfs;
-
-	}
-
-	public void printBFS(List<String> stationsBfs) {
-
-		System.err.println("Still needs to be improved: THIS IS THE BFS until the target is reached, not the route yet: ");
-		for (String s : stationsBfs) {
-			Station station = mapBuilder.getStationWithId(s);
-			System.out.println("Station Name: " + station.getNom() + ", id: " + station.getNum());
-
-		}
-
-	}
-
-	/*
-	 * public int preferenceSameLine(String stationId1, String stationId2, String
-	 * parent) {
-	 * 
-	 * if(mapBuilder.stationsSameLine(parent, stationId1) &&
-	 * !mapBuilder.stationsSameLine(parent, stationId2) ) { return 1; }else if
-	 * (!mapBuilder.stationsSameLine(parent, stationId1) &&
-	 * mapBuilder.stationsSameLine(parent, stationId2) ){ return -1; }
-	 * 
-	 * return 0;
-	 * 
-	 * }
-	 */
-
-}
-
-class ComparatorStations implements Comparator<String> {
-
-	private String parent;
-	private MapBuilder mapBuilder;
 	
-	
-
-	public String getParent() {
-		return parent;
-	}
-
-	public void setParent(String parent) {
-		this.parent = parent;
-	}
-
-
-	public MapBuilder getMapBuilder() {
-		return mapBuilder;
-	}
-
-	public void setMapBuilder(MapBuilder mapBuilder) {
-		this.mapBuilder = mapBuilder;
-	}
-
-
-
-
-	@Override
-	public int compare(String stationId1, String stationId2) {
-
-		
-		Integer distToTargetst1 = mapBuilder.getRouteDistanceIncludingBothStations(stationId1, parent);
-		Integer distTotargetst2 = mapBuilder.getRouteDistanceIncludingBothStations(stationId2, parent);
-
-		if(distToTargetst1 !=0 && distTotargetst2==0) {
-			return 1;
-		}
-		
-		else if(distToTargetst1==0 && distTotargetst2!=0){
-			return -1;
-		}
-		
-		
-		else if (distToTargetst1 != 0 && distTotargetst2 != 0) {
-			if (distToTargetst1 > distTotargetst2) {
-				System.out.println("dist1: " + distToTargetst1);
-				System.out.println("dist2: " + distTotargetst2);
-				System.out.println(mapBuilder.getStationWithId(stationId1).getNom() + " closer to "
-						+ mapBuilder.getStationWithId(parent).getNom() +"than"+mapBuilder.getStationWithId(stationId2).getNom());
-				return 1;
-
-			} else if (distToTargetst1 < distTotargetst2) {
-				System.out.println(mapBuilder.getStationWithId(stationId2).getNom() + " closer to "
-						+ mapBuilder.getStationWithId(parent).getNom()+" than "+mapBuilder.getStationWithId(stationId1).getNom());
-				return -1;
-			} else {
-					System.out.println("Both stations at the same distance: "+mapBuilder.getStationWithId(stationId1).getNom()+" , "+mapBuilder.getStationWithId(stationId2).getNom()
-							+"to "+mapBuilder.getStationWithId(parent).getNom());
-					
-					if(mapBuilder.stationsSameLine(stationId1, parent) && !mapBuilder.stationsSameLine(stationId2, parent)) {
+	public ArrayList<Itinerary> getItinerary() {
+		List<String> l = this.vertices;
+		List<String> bePath = new ArrayList<String>();
+		ArrayList<Itinerary> itineraries = new ArrayList<Itinerary>();
+		if (hasPathTo(this.idEnd)) {
+			bePath.add(this.idEnd);
+			int i = l.indexOf(this.idEnd);
+			
+			while (this.previous[i] != -1) {
+				bePath.add(l.get(this.previous[i]));
+				i = this.previous[i];
+			}
+			
+			String stationStart = mapBuilder.getStationWithId(bePath.get(bePath.size()-1)).getNom(); 
+			String lineStart = mapBuilder.getRouteByStations(bePath.get(bePath.size()-1), bePath.get(bePath.size()-2)).getLigne();
+			String directionStart = mapBuilder.getRouteByStations(bePath.get(bePath.size()-1), bePath.get(bePath.size()-2)).getDirection();
+			String typeStart = mapBuilder.getRouteByStations(bePath.get(bePath.size()-1), bePath.get(bePath.size()-2)).getType();
+			
+			for (int j = (bePath.size() - 2); j >= 0; j--) {
+				String direction = mapBuilder.getRouteByStations(bePath.get(j+1), bePath.get(j)).getDirection();
+				String line = mapBuilder.getRouteByStations(bePath.get(j+1), bePath.get(j)).getLigne();
+				String type = mapBuilder.getRouteByStations(bePath.get(j+1), bePath.get(j)).getType();
+				
+				if (!type.equals("corresp")) {
+					if (!lineStart.equals(line)) {
+						Itinerary itinerary = new Itinerary(typeStart, lineStart, stationStart, mapBuilder.getStationWithId(bePath.get(j+1)).getNom(), directionStart);
+						itineraries.add(itinerary);
 						
-						System.out.println("same distance, but same line for station "+mapBuilder.getStationWithId(stationId1).getNom());
-						return 1;
-					}else if(!mapBuilder.stationsSameLine(stationId1, parent) && mapBuilder.stationsSameLine(stationId2, parent)) {
-							System.out.println("same distance, but same line for station "+mapBuilder.getStationWithId(stationId2).getNom());
-							return -1;
-					}else if(mapBuilder.stationsSameLine(stationId1, parent) && mapBuilder.stationsSameLine(stationId2, parent)) {
-						System.out.println("Both in the same line");
-					}else {
-						System.out.println("None in the line of the target");
+						stationStart = mapBuilder.getStationWithId(bePath.get(j+1)).getNom();
+						lineStart = line;
+						directionStart = direction;
+						typeStart = type;
 					}
-					
-					
-					
-					return 0;
 				}
-
-			
-		}
-
-		// System.out.println("lines " +
-		// mapBuilder.getStationWithId(stationId1).getNom() + ": "
-		// + mapBuilder.getLinesAsociatedWithStation(stationId1));
-		// System.out.println("lines " +
-		// mapBuilder.getStationWithId(stationId2).getNom() + ": "
-		// + mapBuilder.getLinesAsociatedWithStation(stationId2));
-		// System.out.println("Parent: lines " +
-		// mapBuilder.getStationWithId(parent).getNom() + ": "
-		// + mapBuilder.getLinesAsociatedWithStation(parent));
-		// System.out.println();
-		//
-		// if (mapBuilder.stationsSameLine(parent, stationId1) &&
-		// !mapBuilder.stationsSameLine(parent, stationId2)) {
-		// System.out.println("Station " +
-		// mapBuilder.getStationWithId(stationId1).getNom() + " and "
-		// + mapBuilder.getStationWithId(parent).getNom() + " in the same line");
-		// System.out.println();
-		// res=1;
-		//
-		// } else if (!mapBuilder.stationsSameLine(parent, stationId1)
-		// && mapBuilder.stationsSameLine(parent, stationId2)) {
-		// System.out.println("Station " +
-		// mapBuilder.getStationWithId(stationId2).getNom() + " and "
-		// + mapBuilder.getStationWithId(parent).getNom() + " in the same line");
-		// System.out.println();
-		// res=-1;
-		//
-		// } else if (mapBuilder.stationsSameLine(parent, stationId1) &&
-		// mapBuilder.stationsSameLine(parent, stationId2)) {
-		// Integer distToTargetst1 =
-		// mapBuilder.getRouteDistanceIncludingBothStations(stationId1, parent);
-		// Integer distTotargetst2 =
-		// mapBuilder.getRouteDistanceIncludingBothStations(stationId2, parent);
-		//
-		// if (distToTargetst1 > distTotargetst2) {
-		// System.out.println(mapBuilder.getStationWithId(stationId1).getNom() + "
-		// closer to "
-		// + mapBuilder.getStationWithId(parent).getNom());
-		// res=1;
-		//
-		// } else if (distToTargetst1 < distTotargetst2) {
-		// System.out.println(mapBuilder.getStationWithId(stationId2).getNom() + "
-		// closer to "
-		// + mapBuilder.getStationWithId(parent).getNom());
-		// res=-1;
-		// } else if (distToTargetst1 == distTotargetst2) {
-		// {
-		// System.out.println("Both stations at the same distance");
-		// res = 0;
-		// }
-		//
-		// }
-		// }
-		//
-		// System.out.println();
-		// return res;
-
-		return 0;
-
-	}
+				if (bePath.get(j).equals(idEnd)) {
+					Itinerary itinerary = new Itinerary(typeStart, lineStart, stationStart, mapBuilder.getStationWithId(bePath.get(j)).getNom(), directionStart);
+					itineraries.add(itinerary);
+					return itineraries;
+				}
+			}
+		}	
+		return itineraries;
+	}	
 }

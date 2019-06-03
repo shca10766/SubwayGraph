@@ -88,7 +88,7 @@ public class Interface {
     	
     	contentRoute = new JPanel();
     	contentRoute.setPreferredSize(new Dimension(900, 425));
-    	contentPane.add(new JScrollPane(contentRoute), BorderLayout.CENTER);
+    	contentPane.add(contentRoute, BorderLayout.CENTER);
     	
         return contentPane;        
     }
@@ -197,7 +197,6 @@ public class Interface {
         return stationsString;
     }
     
-    
     public JComponent createButton() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 
@@ -206,9 +205,19 @@ public class Interface {
         	public void actionPerformed(ActionEvent e) {
         		if (!fromInput.getText().equals("") && !toInput.getText().equals("")) {
         			Component[] componentPane = contentPane.getComponents();
-            		contentPane.remove(componentPane[componentPane.length - 1]);  
+            		contentPane.remove(componentPane[componentPane.length - 1]);
             		
-            		contentPane.add(new JScrollPane(displayRoute(fromInput.getText(), toInput.getText())), BorderLayout.CENTER);
+            		contentRoute.setLayout(new BoxLayout(contentRoute,BoxLayout.LINE_AXIS));
+            		
+            		BFSShortestPath b = new BFSShortestPath(map, idStationWithName(fromInput.getText()), idStationWithName(toInput.getText()), subway);
+                	ArrayList<Itinerary> itineraryBFS = b.getItinerary();
+                	contentRoute.add(new JScrollPane(displayRoute(itineraryBFS)), BorderLayout.CENTER);
+                	
+                	DijkstraShortestPath d = new DijkstraShortestPath(map, idStationWithName(fromInput.getText()), idStationWithName(toInput.getText()), subway);
+                	ArrayList<Itinerary> itinerary_Dijkstra = d.getItinerary();
+                	contentRoute.add(new JScrollPane(displayRoute(itinerary_Dijkstra)), BorderLayout.CENTER);
+                	
+                	contentPane.add(contentRoute, BorderLayout.CENTER);
             		
             		fromInput.setText("");
             		toInput.setText("");
@@ -241,24 +250,23 @@ public class Interface {
     }
     
     
-    public JComponent displayRoute(String departure, String arrival) {
-    	DijkstraShortestPath d = new DijkstraShortestPath(map, idStationWithName(departure), idStationWithName(arrival), subway);
-    	ArrayList<Itinerary> itinerary = d.getItinerary();
+    public JComponent displayRoute(ArrayList<Itinerary> itineraries) {
     	
-    	JPanel contentRoute = new JPanel(new BorderLayout());
-        contentRoute.setLayout(new BoxLayout(contentRoute,BoxLayout.PAGE_AXIS));
+    	JPanel contentItinerary = new JPanel(new BorderLayout());
+    	contentItinerary.setLayout(new BoxLayout(contentItinerary,BoxLayout.PAGE_AXIS));
         int heightContent = 0;
-        for (int i = 0; i < itinerary.size(); i++) {
-        	contentRoute.add(createItinerary(itinerary.get(i)));
+        for (int i = 0; i < itineraries.size(); i++) {
+        	contentItinerary.add(createItinerary(itineraries.get(i)));
         	heightContent += 130; 
         }
         if (heightContent > 425) {
-        	contentRoute.setPreferredSize(new Dimension(900, heightContent));
+        	contentItinerary.setPreferredSize(new Dimension(400, heightContent));
         }
         else {
-        	contentRoute.setPreferredSize(new Dimension(900, 425));
+        	contentItinerary.setPreferredSize(new Dimension(400, 425));
         }
-    	return contentRoute;
+        
+    	return contentItinerary;
     }
     
     public JComponent createItinerary(Itinerary itinerary) {

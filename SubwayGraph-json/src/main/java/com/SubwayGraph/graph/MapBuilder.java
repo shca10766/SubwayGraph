@@ -17,12 +17,12 @@ public class MapBuilder {
 	private Subway subway;
 	private Graph<String, DefaultEdge> subwayGraph;
 
-	public Subway getSubway() {
-		return subway;
-	}
-
-	public void setSubway(Subway subway) {
+	public MapBuilder(Subway subway) {
+		super();
 		this.subway = subway;
+		this.subwayGraph = new DefaultUndirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+		addVertices();
+		addEdges();
 	}
 
 	public Graph<String, DefaultEdge> getSubwayGraph() {
@@ -31,19 +31,6 @@ public class MapBuilder {
 
 	public void setSubwayGraph(Graph<String, DefaultEdge> subwayGraph) {
 		this.subwayGraph = subwayGraph;
-	}
-
-	public MapBuilder(Graph<String, DefaultEdge> subwayGraph) {
-		super();
-		this.subwayGraph = subwayGraph;
-	}
-
-	public MapBuilder(Subway subway) {
-		super();
-		this.subway = subway;
-		this.subwayGraph = new DefaultUndirectedGraph<String, DefaultEdge>(DefaultEdge.class);
-		addVertices();
-		addEdges();
 	}
 
 	// Add vertices

@@ -27,14 +27,14 @@ public abstract class Main <V extends Comparable<V>> {
 		
 		
 		Interface i = new Interface(m, subway);
-		//i.displayInterface();		
+		i.displayInterface();		
 				
-		BFSShortestPath b = new BFSShortestPath(m);
+		//BFSShortestPath b = new BFSShortestPath(m, "1889", "1676", subway);
 		
 		
 
-		List<String>bfs = new ArrayList<>(b.bfs("1999", "1676"));
-		b.printBFS(bfs);
+		/*List<String>bfs = new ArrayList<>(b.bfs("1999", "1676"));
+		b.printBFS(bfs);*/
 		
 		
 	}
