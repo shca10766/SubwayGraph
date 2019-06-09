@@ -204,8 +204,10 @@ public class Interface {
         button.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		if (!fromInput.getText().equals("") && !toInput.getText().equals("")) {
-        			Component[] componentPane = contentPane.getComponents();
-            		contentPane.remove(componentPane[componentPane.length - 1]);
+        			Component[] componentRoute = contentRoute.getComponents();
+        			for (int i = 0; i < componentRoute.length; i++) {
+        				contentRoute.remove(componentRoute[i]);
+        			}
             		
             		contentRoute.setLayout(new BoxLayout(contentRoute,BoxLayout.LINE_AXIS));
             		
