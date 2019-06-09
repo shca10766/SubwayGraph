@@ -129,9 +129,6 @@ public class BFSShortestPath {
 			if(source.equals(stationId)) {
 				res.add(target);
 			}
-			else if(target.equals(stationId)) {
-				res.add(source);
-			}
 		}
 		return res;	
 	}

@@ -6,19 +6,11 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.*;
 
 import com.SubwayGraph.jackson.Station;
 import com.SubwayGraph.jackson.Subway;
 
-/* MenuDemo.java requires images/middle.gif. */
-
-/*
- * This class is just like MenuLookDemo, except the menu items
- * actually do something, thanks to event listeners.
- */
 public class Interface {
 	private JPanel contentPane;
 	private JPanel contentRoute;
