@@ -2,11 +2,10 @@ package com.SubwayGraph.graph;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DefaultUndirectedGraph;
 
 import com.SubwayGraph.jackson.Line;
 import com.SubwayGraph.jackson.Routes;
@@ -20,7 +19,7 @@ public class MapBuilder {
 	public MapBuilder(Subway subway) {
 		super();
 		this.subway = subway;
-		this.subwayGraph = new DefaultUndirectedGraph<String, DefaultEdge>(DefaultEdge.class);
+		this.subwayGraph = new DefaultDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
 		addVertices();
 		addEdges();
 	}
@@ -50,7 +49,7 @@ public class MapBuilder {
 			for (int j = 0; j < arrets.length; j++) {
 				if (arrets[j][1] != 0) {
 					String idEdge = routes.get(arrets[j][0]).getArrets()[arrets[j][1] - 1];
-					subwayGraph.addEdge(stations.get(i).getNum(), idEdge);
+					subwayGraph.addEdge(idEdge, stations.get(i).getNum());
 				}
 			}
 		}

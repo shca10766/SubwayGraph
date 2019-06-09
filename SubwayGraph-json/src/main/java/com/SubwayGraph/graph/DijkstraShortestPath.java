@@ -1,15 +1,12 @@
 package com.SubwayGraph.graph;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.jgrapht.graph.DefaultEdge;
 
 import com.SubwayGraph.jackson.Station;
-import com.SubwayGraph.jackson.Line;
-import com.SubwayGraph.jackson.Routes;
 import com.SubwayGraph.jackson.Subway;
 
 public class DijkstraShortestPath {
@@ -74,7 +71,7 @@ public class DijkstraShortestPath {
 		
 		List<String> list =  getNeighbors(v);
 		
-		dijkstra(out, list);
+		dijkstra(out, list, null);
 		
 		return out;
 	}
@@ -90,19 +87,20 @@ public class DijkstraShortestPath {
 			if(source.equals(stationId)) {
 				res.add(target);
 			}
-			else if(target.equals(stationId)) {
-				res.add(source);
-			}
 		}
 		return res;		
 	}
 	
-	public void dijkstra(List<String> out, List<String> edgeNeighbors) {
+	public void dijkstra(List<String> out, List<String> edgeNeighbors, String routeSource) {
 		
 		for (int i = 1; i < edgeNeighbors.size(); i++) {
 			String source = edgeNeighbors.get(0);
 			String target = edgeNeighbors.get(i);
+			String routeTarget = mapBuilder.getRouteByStations(source, target).getLigne();
 			double c = getDistance(source, target) + this.distance[vertices.indexOf(source)];
+			if (routeSource != null && !routeSource.equals(routeTarget)) {
+				c += 1;
+			}
 			if (this.distance[vertices.indexOf(target)] > c) {
 				this.distance[vertices.indexOf(target)] = c;
 				this.previous[vertices.indexOf(target)] = vertices.indexOf(source);
@@ -133,8 +131,11 @@ public class DijkstraShortestPath {
 					neighbors.add(target2);
 				}
 			}
+			String vertexSource = vertices.get(this.previous[indexMin]);
+			String vertexTarget = vertices.get(indexMin);
+			String dirSource = mapBuilder.getRouteByStations(vertexSource, vertexTarget).getLigne();
 
-			dijkstra(out, neighbors);
+			dijkstra(out, neighbors, dirSource);
 		}
 	}
 	
