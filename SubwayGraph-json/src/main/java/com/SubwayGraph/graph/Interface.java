@@ -203,7 +203,7 @@ public class Interface {
         JButton button = new JButton("Search");
         button.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		if (!fromInput.getText().equals("") && !toInput.getText().equals("")) {
+        		if (!fromInput.getText().equals("") && !toInput.getText().equals("") && !fromInput.getText().equals(toInput.getText())) {
         			Component[] componentRoute = contentRoute.getComponents();
         			for (int i = 0; i < componentRoute.length; i++) {
         				contentRoute.remove(componentRoute[i]);
@@ -213,11 +213,11 @@ public class Interface {
             		
             		BFSShortestPath b = new BFSShortestPath(map, idStationWithName(fromInput.getText()), idStationWithName(toInput.getText()), subway);
                 	ArrayList<Itinerary> itineraryBFS = b.getItinerary();
-                	contentRoute.add(new JScrollPane(displayRoute(itineraryBFS)), BorderLayout.CENTER);
+                	contentRoute.add(new JScrollPane(displayRoute("BFS", itineraryBFS)), BorderLayout.CENTER);
                 	
                 	DijkstraShortestPath d = new DijkstraShortestPath(map, idStationWithName(fromInput.getText()), idStationWithName(toInput.getText()), subway);
                 	ArrayList<Itinerary> itinerary_Dijkstra = d.getItinerary();
-                	contentRoute.add(new JScrollPane(displayRoute(itinerary_Dijkstra)), BorderLayout.CENTER);
+                	contentRoute.add(new JScrollPane(displayRoute("Dijkstra", itinerary_Dijkstra)), BorderLayout.CENTER);
                 	
                 	contentPane.add(contentRoute, BorderLayout.CENTER);
             		
@@ -252,11 +252,15 @@ public class Interface {
     }
     
     
-    public JComponent displayRoute(ArrayList<Itinerary> itineraries) {
-    	
-    	JPanel contentItinerary = new JPanel(new BorderLayout());
+    public JComponent displayRoute(String algo, ArrayList<Itinerary> itineraries) {    	
+    	JPanel contentItinerary = new JPanel();
     	contentItinerary.setLayout(new BoxLayout(contentItinerary,BoxLayout.PAGE_AXIS));
         int heightContent = 0;
+        
+        JLabel label = new JLabel(algo + " shortest path");
+        label.setFont(label.getFont().deriveFont(18f));
+        contentItinerary.add(label);
+        
         for (int i = 0; i < itineraries.size(); i++) {
         	contentItinerary.add(createItinerary(itineraries.get(i)));
         	heightContent += 130; 
